@@ -1,0 +1,48 @@
+type (
+	UserRegisterRequest {
+		Userid   string `json:"userid"`
+		Password string `json:"password"`
+	}
+	UserRegisterReply {
+	}
+	UserLoginRequest {
+		Userid   string `json:"userid"`
+		Password string `json:"password"`
+	}
+	UserLoginReply {
+		AccessToken  string `json:"accessToken"`
+		AccessExpire int64  `json:"accessExpire"`
+	}
+	UserPasswordModifyRequest {
+		Userid      string `json:"userid"`
+		OldPassword string `json:"oldpassword"`
+		NewPassword string `json:"newpassword"`
+	}
+	UserPasswordModifyReply {
+	}
+	UserCancleRequest {
+		Userid   string `json:"userid"`
+		Password string `json:"password"`
+	}
+	UserCancleReply {
+	}
+)
+
+service user-api{
+	@handler register
+	post /user/register (UserRegisterRequest) returns (UserRegisterReply)
+	@handler login
+	get /user/login (UserLoginRequest) returns (UserLoginReply)
+	
+}
+
+@server(
+	jwt: Auth
+)
+
+service user-api{
+	@handler modifypassword
+	put /user/modifypassword (UserPasswordModifyRequest) returns (UserPasswordModifyReply)
+	@handler Cancle
+	delete /user/cancle (UserCancleRequest) returns (UserCancleReply)
+}

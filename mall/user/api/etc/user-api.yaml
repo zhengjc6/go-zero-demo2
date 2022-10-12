@@ -1,0 +1,11 @@
+Name: user-api
+Host: 0.0.0.0
+Port: 8888
+Mysql:
+  DataSource: root:zhengjc3225@tcp(localhost:3306)/studydb?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+CacheRedis:
+  - Host: localhost:6379
+    Pass: zhengjc3225
+Auth:
+  AccessSecret: aaabbbccc
+  AccessExpire: 86400
