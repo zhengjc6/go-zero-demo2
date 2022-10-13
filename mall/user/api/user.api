@@ -28,6 +28,10 @@ type (
 	}
 )
 
+@server(
+	middleware: RouteExample
+)
+
 service user-api{
 	@handler register
 	post /user/register (UserRegisterRequest) returns (UserRegisterReply)
@@ -43,6 +47,6 @@ service user-api{
 service user-api{
 	@handler modifypassword
 	put /user/modifypassword (UserPasswordModifyRequest) returns (UserPasswordModifyReply)
-	@handler Cancle
+	@handler cancle
 	delete /user/cancle (UserCancleRequest) returns (UserCancleReply)
 }

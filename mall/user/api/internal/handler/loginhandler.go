@@ -3,10 +3,13 @@ package handler
 import (
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
+	"go-zero-demo2/mall/user/api/internal/common/response"
 	"go-zero-demo2/mall/user/api/internal/logic"
 	"go-zero-demo2/mall/user/api/internal/svc"
 	"go-zero-demo2/mall/user/api/internal/types"
+
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func loginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
@@ -16,13 +19,9 @@ func loginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			httpx.Error(w, err)
 			return
 		}
-
+		logx.Info("login user ip" + r.RemoteAddr)
 		l := logic.NewLoginLogic(r.Context(), svcCtx)
 		resp, err := l.Login(&req)
-		if err != nil {
-			httpx.Error(w, err)
-		} else {
-			httpx.OkJson(w, resp)
-		}
+		response.Response(w, resp, err)
 	}
 }

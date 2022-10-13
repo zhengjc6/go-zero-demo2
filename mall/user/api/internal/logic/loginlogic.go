@@ -8,6 +8,7 @@ import (
 	"io"
 	"strings"
 
+	errorx "go-zero-demo2/mall/user/api/internal/common/userapierror"
 	"go-zero-demo2/mall/user/api/internal/svc"
 	"go-zero-demo2/mall/user/api/internal/types"
 	"go-zero-demo2/mall/user/model"
@@ -37,18 +38,20 @@ func (l *LoginLogic) Login(req *types.UserLoginRequest) (resp *types.UserLoginRe
 	m := md5.New()
 	io.WriteString(m, req.Password)
 	cryptstr := hex.EncodeToString(m.Sum(nil))
-	_, sqlerr := l.svcCtx.UserinfoModel.LoginFind(l.ctx, req.Userid, cryptstr)
-	switch sqlerr {
-	case nil:
-	case model.ErrNotFound:
-		return nil, errors.New("userid not exist")
-	default:
-		return nil, sqlerr
+	ret, sqlerr := l.svcCtx.UserinfoModel.FindOne(l.ctx, req.Userid)
+	if sqlerr != nil {
+		if sqlerr == model.ErrNotFound {
+			return nil, errorx.NewDefaultError("user not exit1")
+		}
+		return nil, errorx.NewDefaultError("internal db error")
+	}
+	if ret.Password != cryptstr {
+		return nil, errorx.NewDefaultError("user not exit2")
 	}
 	//create jwt
 	jwttoekn, err := getJwtToken(l.svcCtx.Config, req.Userid)
 	if err != nil {
-		return nil, errors.New("create jwt fail")
+		return nil, errorx.NewDefaultError("create jwt fail")
 	}
 	//log
 	return &types.UserLoginReply{AccessToken: jwttoekn, AccessExpire: l.svcCtx.Config.Auth.AccessExpire}, nil

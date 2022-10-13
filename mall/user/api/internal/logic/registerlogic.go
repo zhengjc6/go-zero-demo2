@@ -35,13 +35,13 @@ func (l *RegisterLogic) Register(req *types.UserRegisterRequest) (resp *types.Us
 	}
 
 	_, sqlerr := l.svcCtx.UserinfoModel.FindOne(l.ctx, req.Userid)
-	switch sqlerr {
-	case nil:
-		return nil, errors.New("userid exist")
-	case model.ErrNotFound:
-		//pass
-	default:
-		return nil, sqlerr
+	if sqlerr != nil {
+		if sqlerr != model.ErrNotFound {
+			return nil, errors.New("internal db error")
+		}
+
+	} else {
+		return nil, errors.New("user exist")
 	}
 	m := md5.New()
 	io.WriteString(m, req.Password)

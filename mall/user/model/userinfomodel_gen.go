@@ -30,6 +30,7 @@ type (
 		FindOne(ctx context.Context, userid string) (*Userinfo, error)
 		Update(ctx context.Context, data *Userinfo) error
 		Delete(ctx context.Context, userid string) error
+		UpdatePasswd(ctx context.Context, userid string, passwd string) error
 	}
 
 	defaultUserinfoModel struct {

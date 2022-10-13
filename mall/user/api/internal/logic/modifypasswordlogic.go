@@ -39,20 +39,22 @@ func (l *ModifypasswordLogic) Modifypassword(req *types.UserPasswordModifyReques
 	m := md5.New()
 	io.WriteString(m, req.OldPassword)
 	cryptstr := hex.EncodeToString(m.Sum(nil))
-	_, sqlerr := l.svcCtx.UserinfoModel.LoginFind(l.ctx, req.Userid, cryptstr)
-	switch sqlerr {
-	case nil:
-	case model.ErrNotFound:
-		return nil, errors.New("userid not exist")
-	default:
-		return nil, sqlerr
+	userinfo, sqlerr := l.svcCtx.UserinfoModel.FindOne(l.ctx, req.Userid)
+	if sqlerr != nil {
+		if err == model.ErrNotFound {
+			return nil, errors.New("invalid userid")
+		}
+		return nil, errors.New("internal db error")
+	}
+	if userinfo.Password != cryptstr {
+		return nil, errors.New("oldpassword error")
 	}
 	//update new password
 
 	m.Reset()
 	io.WriteString(m, req.NewPassword)
 	cryptstr = hex.EncodeToString(m.Sum(nil))
-	sqlerr = l.svcCtx.UserinfoModel.UpdatePasswd(l.ctx, req.Userid, req.NewPassword)
+	sqlerr = l.svcCtx.UserinfoModel.UpdatePasswd(l.ctx, req.Userid, cryptstr)
 	if sqlerr != nil {
 		return nil, errors.New("Modifypassword fail internal error")
 	}
