@@ -1,5 +1,5 @@
 #!/bin/bash
 
 go clean
-go build -o luser user.go
+go build -o lrpcuser user.go
 
