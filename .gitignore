@@ -1,4 +1,5 @@
 *.exe
 .vscode
 default.etcd
+go.sum
 
